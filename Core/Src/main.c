@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "MySPI.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +44,14 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint32_t mainTick = 0;
+uint32_t lastTick;
+uint32_t dt = 100;
+uint8_t db[5];
+fifo_t dataBuff = {db, 5, 0, 0, 0, BUFFER_FREE};
+SPI_Conn_ONE_t SPI1_Bus = {SPI1, PORT_FREE, SPI_MODE_TO, &dataBuff, 0};
 
+uint8_t data[5] = {1,2,3,4,5};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,13 +103,19 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+  SysTick_Config(SystemCoreClock / 1000);  //1ms tick
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+  	if ((mainTick - lastTick) > dt) {
+  		FIFO_PutMulti(&dataBuff, data, 5);
+  		SPI1_Bus.len = 5;
+			SPI_Start_IRQ_ONE_HWNSS(&SPI1_Bus);
+			lastTick = mainTick;
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -116,14 +129,14 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-  LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
-  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_0)
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_3)
   {
   }
   LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
-  while (LL_PWR_IsActiveFlag_VOS() == 0)
+  /*while (LL_PWR_IsActiveFlag_VOS() == 0)
   {
-  }
+  }*/
   LL_RCC_HSE_Enable();
 
    /* Wait till HSE is ready */
@@ -131,7 +144,8 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_25, 128, LL_RCC_PLLP_DIV_2);
+  LL_RCC_HSE_EnableCSS();
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_12, 96, LL_RCC_PLLP_DIV_2);
   LL_RCC_PLL_Enable();
 
    /* Wait till PLL is ready */
@@ -149,8 +163,8 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_Init1msTick(64000000);
-  LL_SetSystemCoreClock(64000000);
+  LL_Init1msTick(100000000);
+  LL_SetSystemCoreClock(100000000);
   LL_RCC_SetTIMPrescaler(LL_RCC_TIM_PRESCALER_TWICE);
 }
 

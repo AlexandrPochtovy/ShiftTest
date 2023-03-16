@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "MySPI.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +58,8 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-
+extern uint32_t mainTick;
+extern SPI_Conn_ONE_t SPI1_Bus;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -187,7 +189,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
 
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+	++mainTick;
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -207,7 +209,7 @@ void SPI1_IRQHandler(void)
 
   /* USER CODE END SPI1_IRQn 0 */
   /* USER CODE BEGIN SPI1_IRQn 1 */
-
+	SPI_IRQ_ONE_CallBack(&SPI1_Bus);
   /* USER CODE END SPI1_IRQn 1 */
 }
 
