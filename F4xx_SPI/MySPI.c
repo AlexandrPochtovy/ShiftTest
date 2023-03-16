@@ -27,16 +27,12 @@ void SPI_Start_IRQ_TWO_HWNSS(SPI_Conn_TWO_t *_spi) {
 	LL_SPI_Enable(_spi->SPIbus); //enable SPI
 }
 
-void SPI_Start_DMA_TWO_HWNSS(SPI_Conn_TWO_t *_spi) {
-	__NOP(); //prototype
-}
-
 void SPI_Start_IRQ_ONE_HWNSS(SPI_Conn_ONE_t *_spi) {
 	_spi->status = PORT_BUSY;
 	if (_spi->mode == SPI_MODE_TO) {
 		_spi->SPIbus->CR2 |= SPI_CR2_TXEIE;
 	} else if (_spi->mode == SPI_MODE_RO) {
-		_spi->SPIbus->CR2 |= SPI_CR2_RXNEIE; //включили прерывание чтобы данные пошли
+		_spi->SPIbus->CR2 |= SPI_CR2_RXNEIE;
 	}
 	/*попробовать просто отключать интерфейс без постоянного включения/выключения прерываний*/
 	//FIFO_GetOne(_spi->data, (uint8_t*)&_spi->SPIbus->DR); //записали регистр который читаем пишем
@@ -90,7 +86,7 @@ void SPI_IRQ_TWO_CallBack(SPI_Conn_TWO_t *_spi) {
 	}
 }
 
-void SPI_IRQ_ONE_CallBack(SPI_Conn_ONE_t *_spi) {
+void SPI_IRQ_TO_CallBack(SPI_Conn_ONE_t *_spi) {
 	_spi->status = PORT_BUSY;
 	volatile uint16_t SPI_SR = _spi->SPIbus->SR;
 	/*if (SPI_SR & (SPI_SR_MODF | SPI_SR_OVR | SPI_SR_CRCERR)) {// Mode fault
@@ -106,22 +102,11 @@ void SPI_IRQ_ONE_CallBack(SPI_Conn_ONE_t *_spi) {
 		_spi->status = PORT_ERROR;		//set error status
 		return;
 	}*/
-	/*if (SPI_SR & SPI_SR_RXNE) {
-		if (_spi->rxlen > 0) {
-			FIFO_PutOne(_spi->rxbuffer, _spi->SPIbus->DR); //read byte
-			--_spi->rxlen;
-		} else if (_spi->txlen > 0) {
-			(void)_spi->SPIbus->DR;
-		} else {
-			_spi->SPIbus->CR2 &= ~SPI_CR2_RXNEIE; //interrupt off
-		}
-		return;
-	}*/
 	if (SPI_SR & SPI_SR_TXE) {
  		if (_spi->len > 0) {
  			uint8_t tmp;
-				FIFO_GetOne(_spi->data, &tmp);
-				_spi->SPIbus->DR = tmp;
+			FIFO_GetOne(_spi->data, &tmp);
+			_spi->SPIbus->DR = tmp;
 			--_spi->len;
 		}
 		else {
@@ -130,6 +115,36 @@ void SPI_IRQ_ONE_CallBack(SPI_Conn_ONE_t *_spi) {
 			LL_SPI_Disable(_spi->SPIbus);
 			_spi->status = PORT_DONE;
 		}
+	}
+}
+
+void SPI_IRQ_RO_CallBack(SPI_Conn_ONE_t *_spi) {
+	_spi->status = PORT_BUSY;
+	volatile uint16_t SPI_SR = _spi->SPIbus->SR;
+	/*if (SPI_SR & (SPI_SR_MODF | SPI_SR_OVR | SPI_SR_CRCERR)) {// Mode fault
+		__NOP();
+		(void) _spi->SPIbus->DR;//clear data register
+		if (SPI_SR & SPI_SR_OVR) { // Overrun flag
+			(void) _spi->SPIbus->SR;//add read status register
+		}
+		if (SPI_SR & SPI_SR_CRCERR) { //< CRC Error flag
+			_spi->SPIbus->SR &= ~SPI_SR_CRCERR;//clear CRC error flag
+		}
+		LL_SPI_Disable(_spi->SPIbus);	//SPI off
+		_spi->status = PORT_ERROR;		//set error status
 		return;
+	}*/
+	if (SPI_SR & SPI_SR_RXNE) {
+		if (_spi->len > 1) {
+			volatile uint8_t tmp = _spi->SPIbus->DR;
+			//FIFO_PutOne(_spi->data, tmp); //read byte
+			--_spi->len;
+		}
+		else {
+			volatile uint8_t tmp = _spi->SPIbus->DR;
+			_spi->SPIbus->CR2 &= ~SPI_CR2_RXNEIE; //interrupt off
+			LL_SPI_Disable(_spi->SPIbus);
+			_spi->status = PORT_DONE;
+		}
 	}
 }

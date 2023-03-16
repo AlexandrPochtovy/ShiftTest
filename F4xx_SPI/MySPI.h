@@ -84,7 +84,9 @@ void SPI_Start_DMA_ONE_HWNSS(SPI_Conn_ONE_t *_spi);
 /*	interrupt processing function	******************************/
 void SPI_IRQ_TWO_CallBack(SPI_Conn_TWO_t *_spi);
 
-void SPI_IRQ_ONE_CallBack(SPI_Conn_ONE_t *_spi);
+void SPI_IRQ_TO_CallBack(SPI_Conn_ONE_t *_spi);
+
+void SPI_IRQ_RO_CallBack(SPI_Conn_ONE_t *_spi);
 
 void SPI_IRQ_DMA_CallBack(SPI_Conn_TWO_t *_spi);
 
