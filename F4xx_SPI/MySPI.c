@@ -33,6 +33,7 @@ void SPI_Start_IRQ_ONE_HWNSS(SPI_Conn_ONE_t *_spi) {
 		_spi->SPIbus->CR2 |= SPI_CR2_TXEIE;
 	} else if (_spi->mode == SPI_MODE_RO) {
 		_spi->SPIbus->CR2 |= SPI_CR2_RXNEIE;
+		LL_GPIO_SetOutputPin(InputEn_GPIO_Port, InputEn_Pin);
 	}
 	/*попробовать просто отключать интерфейс без постоянного включения/выключения прерываний*/
 	//FIFO_GetOne(_spi->data, (uint8_t*)&_spi->SPIbus->DR); //записали регистр который читаем пишем
@@ -141,8 +142,8 @@ void SPI_IRQ_RO_CallBack(SPI_Conn_ONE_t *_spi) {
 			--_spi->len;
 		}
 		else {
-			volatile uint8_t tmp = _spi->SPIbus->DR;
 			_spi->SPIbus->CR2 &= ~SPI_CR2_RXNEIE; //interrupt off
+			volatile uint8_t tmp = _spi->SPIbus->DR;
 			LL_SPI_Disable(_spi->SPIbus);
 			_spi->status = PORT_DONE;
 		}

@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "MySPI.h"
+#include "ShiftRegister.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,8 +60,8 @@
 
 /* USER CODE BEGIN EV */
 extern uint32_t mainTick;
-extern SPI_Conn_ONE_t SPI1_Bus;
-extern SPI_Conn_ONE_t SPI2_Bus;
+extern ShiftOut_t SPI1_Bus;
+extern ShiftIn_t SPI2_Bus;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -210,7 +211,8 @@ void SPI1_IRQHandler(void)
 
   /* USER CODE END SPI1_IRQn 0 */
   /* USER CODE BEGIN SPI1_IRQn 1 */
-	SPI_IRQ_TO_CallBack(&SPI1_Bus);
+	ShiftOut_IRQ_TO_CallBack(&SPI1_Bus);
+	//SPI_IRQ_TO_CallBack(&SPI1_Bus);
   /* USER CODE END SPI1_IRQn 1 */
 }
 
@@ -223,7 +225,8 @@ void SPI2_IRQHandler(void)
 
   /* USER CODE END SPI2_IRQn 0 */
   /* USER CODE BEGIN SPI2_IRQn 1 */
-	SPI_IRQ_RO_CallBack(&SPI2_Bus);
+	ShiftIn_IRQ_RO_CallBack(&SPI2_Bus);
+	//SPI_IRQ_RO_CallBack(&SPI2_Bus);
   /* USER CODE END SPI2_IRQn 1 */
 }
 

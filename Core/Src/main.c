@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "MySPI.h"
+#include "ShiftRegister.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,16 +48,13 @@
 uint32_t mainTick = 0;
 uint32_t lastTick;
 uint32_t dt = 100;
-uint8_t dbOut[5];
-fifo_t bufferOut = {dbOut, 5, 0, 0, 0, BUFFER_FREE};
-SPI_Conn_ONE_t SPI1_Bus = {SPI1, PORT_FREE, SPI_MODE_TO, &bufferOut, 0};
 
 uint8_t dbIn[5];
-fifo_t bufferIn = {dbIn, 5, 0, 0, 0, BUFFER_FREE};
-SPI_Conn_ONE_t SPI2_Bus = {SPI2, PORT_FREE, SPI_MODE_RO, &bufferIn, 0};
+ShiftIn_t SPI2_Bus = {SPI2, PORT_FREE, InputEn_GPIO_Port, InputEn_Pin, dbIn, 0, 5};
 
-uint8_t dataIn[5];
-uint8_t dataOut[5] = {1,2,3,4,5};
+uint8_t dbOut[5];
+ShiftOut_t SPI1_Bus = {SPI1, PORT_FREE, OutputEn_GPIO_Port, OutputEn_Pin, dbOut, 0, 5};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -116,13 +114,10 @@ int main(void)
   while (1)
   {
   	if ((mainTick - lastTick) > dt) {
-  		FIFO_PutMulti(&bufferOut, dataOut, 5);
   		SPI1_Bus.len = 5;
-			SPI_Start_IRQ_ONE_HWNSS(&SPI1_Bus);
-
-			//FIFO_GetMulti(&bufferIn, dataIn, 5);
-			SPI2_Bus.len = 5;
-			SPI_Start_IRQ_ONE_HWNSS(&SPI2_Bus);
+  		SPI2_Bus.len = 5;
+			ShiftIn_Start(&SPI2_Bus);
+			ShiftOut_Start(&SPI1_Bus);
 			LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 			lastTick = mainTick;
 		}
