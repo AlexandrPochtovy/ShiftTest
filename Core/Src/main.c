@@ -23,7 +23,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "MySPI.h"
 #include "ShiftRegister.h"
 /* USER CODE END Includes */
 
