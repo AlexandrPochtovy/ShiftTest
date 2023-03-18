@@ -94,7 +94,7 @@ void MX_GPIO_Init(void)
   /**/
   GPIO_InitStruct.Pin = InputEn_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(InputEn_GPIO_Port, &GPIO_InitStruct);
