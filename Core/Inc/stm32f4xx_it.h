@@ -57,6 +57,10 @@ void PendSV_Handler(void);
 void SysTick_Handler(void);
 void SPI1_IRQHandler(void);
 void SPI2_IRQHandler(void);
+void USART2_IRQHandler(void);
+void SPI3_IRQHandler(void);
+void SPI4_IRQHandler(void);
+void SPI5_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

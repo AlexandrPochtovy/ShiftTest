@@ -28,6 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 
+#include "stm32f4xx_ll_crc.h"
 #include "stm32f4xx_ll_rcc.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_system.h"
@@ -37,6 +38,7 @@ extern "C" {
 #include "stm32f4xx_ll_pwr.h"
 #include "stm32f4xx_ll_dma.h"
 #include "stm32f4xx_ll_spi.h"
+#include "stm32f4xx_ll_usart.h"
 #include "stm32f4xx_ll_gpio.h"
 
 #if defined(USE_FULL_ASSERT)
@@ -73,10 +75,22 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin LL_GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
-#define OutputEn_Pin LL_GPIO_PIN_6
-#define OutputEn_GPIO_Port GPIOA
-#define InputEn_Pin LL_GPIO_PIN_15
-#define InputEn_GPIO_Port GPIOB
+#define SPI1_NSS_Flash_Pin LL_GPIO_PIN_4
+#define SPI1_NSS_Flash_GPIO_Port GPIOA
+#define SPI1_SCK_Flash_Pin LL_GPIO_PIN_5
+#define SPI1_SCK_Flash_GPIO_Port GPIOA
+#define SPI1_MISO_Flash_Pin LL_GPIO_PIN_6
+#define SPI1_MISO_Flash_GPIO_Port GPIOA
+#define SPI1_MOSI_Flash_Pin LL_GPIO_PIN_7
+#define SPI1_MOSI_Flash_GPIO_Port GPIOA
+#define SPI2_ShiftOutEn_Pin LL_GPIO_PIN_14
+#define SPI2_ShiftOutEn_GPIO_Port GPIOB
+#define SPI4_ShiftOutEn_Pin LL_GPIO_PIN_11
+#define SPI4_ShiftOutEn_GPIO_Port GPIOA
+#define SPI5_ShiftOutEn_Pin LL_GPIO_PIN_12
+#define SPI5_ShiftOutEn_GPIO_Port GPIOA
+#define SPI3_ShiftInLatch_Pin LL_GPIO_PIN_5
+#define SPI3_ShiftInLatch_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

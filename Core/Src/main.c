@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "crc.h"
 #include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -49,10 +51,38 @@ uint32_t lastTick;
 uint32_t dt = 100;
 
 uint8_t dbIn[5];
-ShiftIn_t SPI2_Bus = {SPI2, PORT_FREE, InputEn_GPIO_Port, InputEn_Pin, dbIn, 0, 5};
+ShiftIn_t Input_Bus = {	.SPIbus = SPI3,
+												.status = PORT_FREE,
+												.inputPort = SPI3_ShiftInLatch_GPIO_Port,
+												.inputPin = SPI3_ShiftInLatch_Pin,
+												.data = dbIn,
+												.ind = 0,
+												.len = 5	};
 
-uint8_t dbOut[5];
-ShiftOut_t SPI1_Bus = {SPI1, PORT_FREE, OutputEn_GPIO_Port, OutputEn_Pin, dbOut, 0, 5};
+
+ShiftOut_t Output1_Bus = {	.SPIbus = SPI2,
+                          	.status = PORT_FREE,
+                          	.outputPort = SPI2_ShiftOutEn_GPIO_Port,
+                          	.outputPin = SPI2_ShiftOutEn_Pin,
+                          	.data = dbIn,
+                          	.ind = 0,
+                          	.len = 1	};
+
+ShiftOut_t Output2_Bus = {	.SPIbus = SPI4,
+                          	.status = PORT_FREE,
+                          	.outputPort = SPI4_ShiftOutEn_GPIO_Port,
+                          	.outputPin = SPI4_ShiftOutEn_Pin,
+                          	.data = dbIn,
+                          	.ind = 0,
+                          	.len = 2	};
+
+ShiftOut_t Output3_Bus = {	.SPIbus = SPI5,
+                          	.status = PORT_FREE,
+                          	.outputPort = SPI5_ShiftOutEn_GPIO_Port,
+                          	.outputPin = SPI5_ShiftOutEn_Pin,
+                          	.data = dbIn,
+                          	.ind = 0,
+                          	.len = 2	};
 
 /* USER CODE END PV */
 
@@ -102,8 +132,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_CRC_Init();
+  MX_USART2_UART_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
+  MX_SPI3_Init();
+  MX_SPI4_Init();
+  MX_SPI5_Init();
   /* USER CODE BEGIN 2 */
   SysTick_Config(SystemCoreClock / 1000);  //1ms tick
   /* USER CODE END 2 */
@@ -113,10 +148,10 @@ int main(void)
   while (1)
   {
   	if ((mainTick - lastTick) > dt) {
-  		SPI1_Bus.len = 5;
-  		SPI2_Bus.len = 5;
-			ShiftIn_Start(&SPI2_Bus);
-			ShiftOut_Start(&SPI1_Bus);
+  		Output1_Bus.len = 5;
+  		Input_Bus.len = 5;
+			ShiftIn_Start(&Input_Bus);
+			ShiftOut_Start(&Output1_Bus);
 			LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 			lastTick = mainTick;
 		}
@@ -137,10 +172,10 @@ void SystemClock_Config(void)
   while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_3)
   {
   }
-  LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
-  /*while (LL_PWR_IsActiveFlag_VOS() == 0)
+  LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE3);
+  while (LL_PWR_IsActiveFlag_VOS() == 0)
   {
-  }*/
+  }
   LL_RCC_HSE_Enable();
 
    /* Wait till HSE is ready */

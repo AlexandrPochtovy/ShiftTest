@@ -59,8 +59,10 @@
 
 /* USER CODE BEGIN EV */
 extern uint32_t mainTick;
-extern ShiftOut_t SPI1_Bus;
-extern ShiftIn_t SPI2_Bus;
+extern ShiftIn_t Input_Bus;
+extern ShiftOut_t Output1_Bus;
+extern ShiftOut_t Output2_Bus;
+extern ShiftOut_t Output3_Bus;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -210,7 +212,7 @@ void SPI1_IRQHandler(void)
 
   /* USER CODE END SPI1_IRQn 0 */
   /* USER CODE BEGIN SPI1_IRQn 1 */
-	ShiftOut_IRQ_TO_CallBack(&SPI1_Bus);
+
 	//SPI_IRQ_TO_CallBack(&SPI1_Bus);
   /* USER CODE END SPI1_IRQn 1 */
 }
@@ -224,9 +226,61 @@ void SPI2_IRQHandler(void)
 
   /* USER CODE END SPI2_IRQn 0 */
   /* USER CODE BEGIN SPI2_IRQn 1 */
-	ShiftIn_IRQ_RO_CallBack(&SPI2_Bus);
+	ShiftOut_IRQ_TO_CallBack(&Output1_Bus);
 	//SPI_IRQ_RO_CallBack(&SPI2_Bus);
   /* USER CODE END SPI2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles SPI3 global interrupt.
+  */
+void SPI3_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI3_IRQn 0 */
+
+  /* USER CODE END SPI3_IRQn 0 */
+  /* USER CODE BEGIN SPI3_IRQn 1 */
+	ShiftIn_IRQ_RO_CallBack(&Input_Bus);
+  /* USER CODE END SPI3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles SPI4 global interrupt.
+  */
+void SPI4_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI4_IRQn 0 */
+
+  /* USER CODE END SPI4_IRQn 0 */
+  /* USER CODE BEGIN SPI4_IRQn 1 */
+	ShiftOut_IRQ_TO_CallBack(&Output2_Bus);
+  /* USER CODE END SPI4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles SPI5 global interrupt.
+  */
+void SPI5_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI5_IRQn 0 */
+
+  /* USER CODE END SPI5_IRQn 0 */
+  /* USER CODE BEGIN SPI5_IRQn 1 */
+	ShiftOut_IRQ_TO_CallBack(&Output3_Bus);
+  /* USER CODE END SPI5_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
